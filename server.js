@@ -4,6 +4,7 @@ const morgan = require("morgan");
 // Loading environment variables from .env file
 require("dotenv").config();
 
+//import colour module
 require("colors");
 
 const app = express(); // creates an instance of an Express application.
