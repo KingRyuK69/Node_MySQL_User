@@ -3,5 +3,5 @@ module.exports = {
   user: process.env.USER,
   password: process.env.PASSWORD,
   db: process.env.DB,
-  dialect: mysql,
+  dialect: process.env.DIALECT,
 };
