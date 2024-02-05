@@ -27,6 +27,10 @@ app.use("/api/users_info", route1); //set custom route to be used
 
 app.use("/", routes); //deafalt route
 
+app.get("/home", (req, res) => {
+  res.send("Hello Node SQL API!");
+});
+
 app.listen(PORT, () => {
   console.log(
     `Server connected in ${process.env.NODE_ENV} mode on port ${PORT}`.bgMagenta
