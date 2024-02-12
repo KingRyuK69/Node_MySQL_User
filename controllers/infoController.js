@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const base64 = require("base64-img");
 const jwt = require("jsonwebtoken");
+const sequelize = require("sequelize");
 // require("dotenv").config();
 
 //create main model
@@ -220,36 +221,74 @@ const getUserDesc = async (req, res) => {
 // };
 
 // wrap the whole data into one object
+// const getUserEmail = async (req, res) => {
+//   try {
+//     const data = await User_info.findOne({
+//       include: [
+//         {
+//           model: User_email,
+//           as: "user_email",
+//         },
+//         {
+//           model: User_desc,
+//           as: "user_desc",
+//         },
+//       ],
+//       where: { id: 7 },
+//     });
+
+//     // wrap the data inside another object then delete the previous models
+//     const wrappedData = {
+//       ...data.get(),
+//       email: data.user_email[0].email,
+//       review: data.user_desc[0].review,
+//       description: data.user_desc[0].description,
+//       user_id: data.user_email[0].user_id,
+//     };
+//     delete wrappedData.user_email;
+//     delete wrappedData.user_desc;
+
+//     res.status(200).json({
+//       error: false,
+//       result: wrappedData,
+//       msg: "Info Retrieved Successfully",
+//     });
+//   } catch (error) {
+//     res.status(500).send(error.message);
+//   }
+// };
+
+// wrap the whole data into one object
 const getUserEmail = async (req, res) => {
   try {
     const data = await User_info.findOne({
+      where: { id: 7 },
+      attributes: [
+        "id",
+        "name",
+        "phone_number",
+        [sequelize.col("user_email.email"), "email"],
+        [sequelize.col("user_email.user_id"), "user_id"],
+        [sequelize.col("user_desc.review"), "review"],
+        [sequelize.col("user_desc.description"), "description"],
+      ],
       include: [
         {
           model: User_email,
           as: "user_email",
+          attributes: [], // to exclude other attributes
         },
         {
           model: User_desc,
           as: "user_desc",
+          attributes: [],
         },
       ],
-      where: { id: 7 },
     });
-
-    // wrap the data
-    const wrappedData = {
-      ...data.get(),
-      email: data.user_email[0].email,
-      review: data.user_desc[0].review,
-      description: data.user_desc[0].description,
-      user_id: data.user_email[0].user_id,
-    };
-    delete wrappedData.user_email;
-    delete wrappedData.user_desc;
 
     res.status(200).json({
       error: false,
-      result: wrappedData,
+      result: data,
       msg: "Info Retrieved Successfully",
     });
   } catch (error) {
