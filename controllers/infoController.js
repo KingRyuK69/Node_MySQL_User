@@ -196,9 +196,33 @@ const getUserDesc = async (req, res) => {
 };
 
 // get user email
+// const getUserEmail = async (req, res) => {
+//   try {
+//     const data = await User_info.findAll({
+//       include: [
+//         {
+//           model: User_email,
+//           as: "user_email",
+//         },
+//         {
+//           model: User_desc,
+//           as: "user_desc",
+//         },
+//       ],
+//       where: { id: 7 },
+//     });
+//     res
+//       .status(200)
+//       .json({ error: false, result: data, msg: "Info Retrieved Successfully" });
+//   } catch (error) {
+//     res.status(500).send(error.message);
+//   }
+// };
+
+// wrap the whole data into one object
 const getUserEmail = async (req, res) => {
   try {
-    const data = await User_info.findAll({
+    const data = await User_info.findOne({
       include: [
         {
           model: User_email,
@@ -209,9 +233,25 @@ const getUserEmail = async (req, res) => {
           as: "user_desc",
         },
       ],
-      where: { id: 5 },
+      where: { id: 7 },
     });
-    res.status(200).json(data);
+
+    // wrap the data
+    const wrappedData = {
+      ...data.get(),
+      email: data.user_email[0].email,
+      review: data.user_desc[0].review,
+      description: data.user_desc[0].description,
+      user_id: data.user_email[0].user_id,
+    };
+    delete wrappedData.user_email;
+    delete wrappedData.user_desc;
+
+    res.status(200).json({
+      error: false,
+      result: wrappedData,
+      msg: "Info Retrieved Successfully",
+    });
   } catch (error) {
     res.status(500).send(error.message);
   }
